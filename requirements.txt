@@ -11,3 +11,4 @@ nose==1.2.1
 nosexcover==1.0.7
 django-compressor==1.2
 pyOpenSSL==0.13
+psycopg2==2.5
