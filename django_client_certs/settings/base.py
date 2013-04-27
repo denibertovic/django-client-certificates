@@ -98,9 +98,8 @@ from secret import SECRET_KEY
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
+    # 'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -112,13 +111,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = PROJECT_NAME + '.urls'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or
-    # "C:/www/django/templates". Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    ABS_PATH('templates'),
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -140,7 +132,8 @@ INSTALLED_APPS = (
 
     # Uncomment to enable Django Compressor for minifying/combining JS/CSS
     'compressor',
-    'client_certs'
+    'client_certs',
+    'home'
 )
 
 # Get the SENTRY_DSN from your project settings page in Sentry (either self

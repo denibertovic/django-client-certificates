@@ -1,0 +1,10 @@
+
+{% if cert_user %}
+<h4>User info:</h4>
+
+<p>First name: {{ cert_user.first_name }}</p>
+<p>Last name: {{ cert_user.last_name }}</p>
+<p>Email: {{ cert_user.email }}</p>
+{% else %}
+<h4>User not found in database.</h4>
+{% endif %}
