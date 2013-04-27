@@ -139,7 +139,8 @@ INSTALLED_APPS = (
     'raven.contrib.django',
 
     # Uncomment to enable Django Compressor for minifying/combining JS/CSS
-    'compressor'
+    'compressor',
+    'client_certs'
 )
 
 # Get the SENTRY_DSN from your project settings page in Sentry (either self
