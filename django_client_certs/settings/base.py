@@ -115,6 +115,10 @@ MIDDLEWARE_CLASSES = (
     'client_certs.middleware.ClientCertificateMiddleware'
 )
 
+
+AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS +\
+    ('client_certs.backends.ClientCertificateBackend',)
+
 ROOT_URLCONF = PROJECT_NAME + '.urls'
 
 INSTALLED_APPS = (
