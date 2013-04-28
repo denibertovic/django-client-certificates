@@ -11,15 +11,16 @@ class ClientCertificateMiddleware(object):
 
     def process_request(self, request):
         client_certificate_info = request.META.get('HTTP_X_CLIENT_DN')
-        found = re.search('emailAddress=(.+)', client_certificate_info)
-        user = None
-        if found:
-            email = found.group(1)
-            try:
-                user = User.objects.get(email=email)
-                user.backend = 'django.contrib.auth.backends.ModelBackend'
-                login(request, user)
-            except Exception as e:
-                print e
+        if client_certificate_info:
+            found = re.search('emailAddress=(.+)', client_certificate_info)
+            user = None
+            if found:
+                email = found.group(1)
+                try:
+                    user = User.objects.get(email=email)
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                except Exception as e:
+                    print e
 
         return None

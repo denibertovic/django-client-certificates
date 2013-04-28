@@ -1,15 +1,10 @@
 
-{% if cert_user %}
+{% if request.user.is_authenticated %}
 <h4>User info:</h4>
 
-<p>First name: {{ cert_user.first_name }}</p>
-<p>Last name: {{ cert_user.last_name }}</p>
-<p>Email: {{ cert_user.email }}</p>
+<p>First name: {{ request.user.first_name }}</p>
+<p>Last name: {{ request.user.last_name }}</p>
+<p>Email: {{ request.user.email }}</p>
 {% else %}
-<h4>User not found in database.</h4>
+<h4>No certificate...</h4>
 {% endif %}
-
-
-
-
-<h1>User = {{ request.user }}</h1>
