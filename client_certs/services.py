@@ -15,5 +15,4 @@ def send_p12_files_via_email(queryset):
             [cert.user.email])
         email.attach(cert.user.username + '.p12', p12_file, 'application/x-pkcs12')
         email.send()
-        print "SENDING EMAILS>"
     return True
