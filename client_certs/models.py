@@ -25,5 +25,4 @@ class Cert(models.Model):
             organizational_unit=self.organizational_unit,
             common_name=self.common_name,
             email=self.user.email)
-        print self.x509
         super(Cert, self).save(*args, **kwargs)
