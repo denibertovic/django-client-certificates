@@ -1,5 +1,6 @@
 from OpenSSL import crypto
 from django.conf import settings
+from datetime import datetime, timedelta
 
 
 import logging
@@ -13,12 +14,16 @@ def create_self_signed_client_cert(country, state, locality, organization,
     Function for generating client certificates
     """
 
-    # load_key_file
+    # load files
     try:
         with open(settings.CERT_KEY_FILE) as key_file:
             k = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read())
+        with open(settings.CERT_CA_FILE) as ca_file:
+            ca = crypto.load_certificate(crypto.FILETYPE_PEM, ca_file.read())
+        with open(settings.CERT_CA_KEY_FILE) as ca_key_file:
+            ca_key = crypto.load_privatekey(crypto.FILETYPE_PEM, ca_key_file.read())
     except IOError as e:
-        log.error("Unable to open Key file: %s", e)
+        log.error("Unable to open file: %s", e)
         raise
 
     # create a self-signed cert
@@ -30,12 +35,21 @@ def create_self_signed_client_cert(country, state, locality, organization,
     cert.get_subject().OU = organizational_unit
     cert.get_subject().CN = common_name
     cert.get_subject().emailAddress = email
+
     cert.set_serial_number(1000)
-    cert.gmtime_adj_notBefore(0)
-    cert.gmtime_adj_notAfter(10*365*24*60*60)
-    cert.set_issuer(cert.get_subject())
+
+    now = datetime.now()
+    sooner = now - timedelta(days=1)
+    later = now + timedelta(days=3650)
+
+    cert.set_notBefore(sooner.strftime("%Y%m%d%H%M%SZ"))
+    cert.set_notAfter(later.strftime("%Y%m%d%H%M%SZ"))
+
+    cert.set_issuer(ca.get_subject())
+
     cert.set_pubkey(k)
-    cert.sign(k, 'sha1')
+
+    cert.sign(ca_key, 'sha1')
 
     ## to str for storing in db
     return crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
@@ -50,11 +64,14 @@ def export_client_cert_as_pk12(cert, password):
     try:
         with open(settings.CERT_KEY_FILE) as key_file:
             k = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read())
+        with open(settings.CERT_CA_FILE) as ca_file:
+            ca = crypto.load_certificate(crypto.FILETYPE_PEM, ca_file.read())
     except IOError as e:
-        log.error("Unable to open Key file: %s", e)
+        log.error("Unable to open file: %s", e)
         raise
 
     p12 = crypto.PKCS12()
     p12.set_privatekey(k)
     p12.set_certificate(cert)
+    p12.set_ca_certificates([ca])
     return p12.export(passphrase=password)
