@@ -1,9 +1,11 @@
-from OpenSSL import crypto
-from django.conf import settings
-from datetime import datetime, timedelta
-
-
 import logging
+from datetime import datetime, timedelta
+import uuid
+
+from django.conf import settings
+
+from OpenSSL import crypto
+
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ def create_self_signed_client_cert(country, state, locality, organization,
     cert.get_subject().CN = common_name
     cert.get_subject().emailAddress = email
 
-    cert.set_serial_number(1000)
+    cert.set_serial_number(uuid.uuid4().get_hex())
 
     now = datetime.now()
     sooner = now - timedelta(days=1)
