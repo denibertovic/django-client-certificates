@@ -8,3 +8,5 @@
 /cover/
 /coverage.xml
 /nosetests.xml
+MANIFEST
+/dist/
