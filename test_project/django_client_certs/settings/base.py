@@ -135,12 +135,6 @@ INSTALLED_APPS = (
     # Uncomment to enable South for database migrations:
     'south',
 
-    # Uncomment to enable exception logging using Sentry; you also need
-    # to set SENTRY_DSN below
-    'raven.contrib.django',
-
-    # Uncomment to enable Django Compressor for minifying/combining JS/CSS
-    'compressor',
     'client_certs',
     'home'
 )
