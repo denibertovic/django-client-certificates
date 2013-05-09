@@ -25,7 +25,7 @@ def create_self_signed_client_cert(country, state, locality, organization,
         with open(settings.CERT_CA_KEY_FILE) as ca_key_file:
             ca_key = crypto.load_privatekey(crypto.FILETYPE_PEM, ca_key_file.read())
     except IOError as e:
-        log.error("Unable to open file: %s", e)
+        log.error(e)
         raise
 
     # create a self-signed cert
@@ -38,7 +38,7 @@ def create_self_signed_client_cert(country, state, locality, organization,
     cert.get_subject().CN = common_name
     cert.get_subject().emailAddress = email
 
-    cert.set_serial_number(uuid.uuid4().get_hex())
+    cert.set_serial_number(uuid.uuid4().int)
 
     now = datetime.now()
     sooner = now - timedelta(days=1)
@@ -69,7 +69,7 @@ def export_client_cert_as_pk12(cert, password):
         with open(settings.CERT_CA_FILE) as ca_file:
             ca = crypto.load_certificate(crypto.FILETYPE_PEM, ca_file.read())
     except IOError as e:
-        log.error("Unable to open file: %s", e)
+        log.error(e)
         raise
 
     p12 = crypto.PKCS12()
