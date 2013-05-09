@@ -6,7 +6,7 @@ setup(
     name='django-client-certificates',
     version=VERSION,
     author='Deni Bertovic',
-    author_email='deni@initeq.net',
+    author_email='deni@kset.org',
     description='Django auth using client certificates',
     packages=['client_certs'],
     license='BSD',
