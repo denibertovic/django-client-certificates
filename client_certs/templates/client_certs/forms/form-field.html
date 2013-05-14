@@ -1,0 +1,14 @@
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+<li>
+    <label for="{{ field.id }}">{{ field.label }}</label>
+    <div class="group">
+        {{ field }}
+        <p>{{ field.help_text|safe }}</p>
+        {% for error in field.errors %}
+            <p class="error-message">{{ error }}</p>
+        {% endfor %}
+    </div>
+</li>
+{% endif %}

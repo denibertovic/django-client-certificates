@@ -34,7 +34,7 @@ class ClientCertificateMiddleware(object):
                     return
         except KeyError:
             # If specified header doesn't exist then remove any existing
-            # authenticated remote-user, or return (leaving request.user set to
+            # authenticated user, or return (leaving request.user set to
             # AnonymousUser by the AuthenticationMiddleware).
             if request.user.is_authenticated():
                 try:

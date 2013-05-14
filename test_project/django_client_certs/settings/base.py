@@ -1,8 +1,9 @@
 # Django settings
-from django.conf import global_settings
 import os.path
+from django.conf import global_settings
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
 PROJECT_NAME = os.path.basename(ROOT_DIR)
 
 

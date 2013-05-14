@@ -46,5 +46,7 @@ class ClientCertificateBackend(ModelBackend):
             user = UserModel.objects.get(email=email)
         except UserModel.DoesNotExist:
             if self.create_unknown_user:
-                user = UserModel.objects.create(username=get_md5_hexdigest(email), email=email)
+                user = UserModel.objects.create(
+                            username=get_md5_hexdigest(email),
+                            email=email)
         return user

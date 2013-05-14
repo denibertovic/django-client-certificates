@@ -11,6 +11,7 @@ if __name__ == "__main__":
 
     root = dirname(abspath(__file__))
     sys.path.append(root)
+    sys.path.append(join(root, '..'))
     settings_module = None
     for name in listdir(root):
         full_name = join(root, name)

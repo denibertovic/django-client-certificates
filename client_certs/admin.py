@@ -1,25 +1,17 @@
 from django.contrib import admin
+
 from .models import Cert
-from django.contrib import messages
-from .services import send_p12_files_via_email
 
 
 class CertAdmin(admin.ModelAdmin):
-    list_display = ('user',)
-    fields = ('user', 'export_password', 'country', 'state', 'locality',
-        'organization', 'organizational_unit', 'common_name')
 
-    def send_p12(self, request, queryset):
-        resp = send_p12_files_via_email(queryset)
-        if resp:
-            self.message_user(request, "PKCS12 certificates have been sent.")
-        else:
-            self.message_user(request,
-                "An error happend.",
-                level=messages.INFO)
+    list_display = ('user', 'install_link', 'is_valid', 'valid_until')
+    fields = ('user', 'country', 'state', 'locality',
+        'organization', 'organizational_unit', 'common_name', 'description',
+        'is_valid', 'valid_until')
 
-    send_p12.short_description = "Export Certificate and send via email"
-
-    actions = [send_p12]
+    def install_link(self, obj):
+        return '<a href="%s">Install Link</a>' % obj.get_absolute_url()
+    install_link.allow_tags = True
 
 admin.site.register(Cert, CertAdmin)

@@ -1,0 +1,29 @@
+<!-- Form -->
+<form action="" method="POST">
+    {% csrf_token %}
+
+    {% if form.errors %}
+        <div class="message message-form message-danger">
+            <p>Please fix the errors below:</p>
+            <p>{{form.non_field_errors}}</p>
+        </div>
+    {% endif %}
+
+    <fieldset>
+
+        <ol>
+            {% for field in form  %}
+
+                {% include "client_certs/forms/form-field.html" with field=field %}
+
+            {% endfor %}
+
+        </ol>
+        <div class="action">
+            <input type="submit" class="button" value="Install Client Certificate"/>
+        </div>
+
+    </fieldset>
+
+</form>
+<!-- /Form -->
