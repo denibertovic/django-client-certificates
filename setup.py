@@ -1,9 +1,9 @@
-from distutils.core import setup
-
 import os
 import sys
 
-VERSION = '0.1dev'
+from setuptools import setup
+
+VERSION = '0.1'
 
 
 if sys.argv[-1] == 'publish':
@@ -19,9 +19,9 @@ setup(
     url='github.com/denibertovic/django-client-certificates',
     packages=['client_certs'],
     license='BSD',
-    install_requires=['pyOpenSSL>=0.13', 'django>=1.4'],
+    install_requires=['pyOpenSSL>=0.13', 'django>=1.5'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
