@@ -5,7 +5,7 @@ from .models import Cert
 
 class CertAdmin(admin.ModelAdmin):
 
-    list_display = ('user', 'install_link', 'is_valid', 'valid_until')
+    list_display = ('user', 'install_link', 'is_valid', 'valid_until', 'is_installed')
     fields = ('user', 'country', 'state', 'locality',
         'organization', 'organizational_unit', 'common_name', 'description',
         'is_valid', 'valid_until')

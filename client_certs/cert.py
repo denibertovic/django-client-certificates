@@ -10,7 +10,7 @@ from OpenSSL import crypto
 log = logging.getLogger(__name__)
 
 
-def create_self_signed_client_cert(client_public_key, country, state, locality, organization,
+def create_signed_client_cert(client_public_key, country, state, locality, organization,
         organizational_unit, common_name, email, valid_until):
     """
     Function for generating client certificates
