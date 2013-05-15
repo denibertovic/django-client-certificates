@@ -6,9 +6,8 @@ from .models import Cert
 class CertAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'install_link', 'is_valid', 'valid_until', 'is_installed')
-    fields = ('user', 'country', 'state', 'locality',
-        'organization', 'organizational_unit', 'common_name', 'description',
-        'is_valid', 'valid_until')
+    fields = ('user', 'country', 'state', 'locality', 'organization',
+        'organizational_unit', 'common_name', 'description', 'valid_until')
 
     def install_link(self, obj):
         return '<a href="%s">Install Link</a>' % obj.get_absolute_url()
