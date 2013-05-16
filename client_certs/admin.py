@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 
 from .models import Cert
 
@@ -12,5 +13,22 @@ class CertAdmin(admin.ModelAdmin):
     def install_link(self, obj):
         return '<a href="%s">Install Link</a>' % obj.get_absolute_url()
     install_link.allow_tags = True
+
+    def revoke_certificate(self, request, queryset):
+        revoked = ''.join(cert.x509 for cert in queryset if cert.is_valid and cert.is_installed)
+        with open(settings.CERT_REVOKE_FILE, 'a') as f:
+            f.write(revoked)
+
+        updated = queryset.update(is_valid=False)
+        if updated == 1:
+            message = '1 Certificate was revoked.'
+        else:
+            message = '%s Certificates were revoked.' % updated
+
+        self.message_user(request, message)
+
+    revoke_certificate.short_description = "Revoke selected Client Certificates"
+
+    actions = [revoke_certificate]
 
 admin.site.register(Cert, CertAdmin)
