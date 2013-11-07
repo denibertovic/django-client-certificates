@@ -115,8 +115,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 
-AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS +\
-    ('client_certs.backends.ClientCertificateBackend',)
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'client_certs.backends.ClientCertificateBackend',)
 
 ROOT_URLCONF = PROJECT_NAME + '.urls'
 
