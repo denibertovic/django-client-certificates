@@ -1,7 +1,11 @@
 from uuid import uuid4
 
+from OpenSSL import crypto
+
 from django.db import models
 from django.conf import settings
+
+from .cert import create_signed_client_cert
 
 
 class Cert(models.Model):
@@ -29,3 +33,25 @@ class Cert(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('certs_install_certificate', (), {'uuid': self.uuid})
+
+    def generate_and_sign_client_cert(self, pub_key):
+
+        spki = crypto.NetscapeSPKI(pub_key)
+        self.pub_key = pub_key
+
+        x509 = create_signed_client_cert(
+            client_public_key=spki.get_pubkey(),
+            country=self.country,
+            state=self.state,
+            locality=self.locality,
+            organization=self.organization,
+            organizational_unit=self.organizational_unit,
+            common_name=self.common_name,
+            email=self.user.email,
+            valid_until=self.valid_until)
+
+        self.x509 = crypto.dump_certificate(crypto.FILETYPE_PEM, x509)
+        self.is_installed = True
+        self.save()
+
+        return x509

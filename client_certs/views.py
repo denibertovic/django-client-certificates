@@ -4,7 +4,7 @@ from django.shortcuts import render
 from OpenSSL import crypto
 
 from .forms import InstallCertificateForm
-from .helpers import create_x509_and_update_cert
+from .models import Cert
 
 
 def install_certificate(request, uuid):
@@ -12,18 +12,20 @@ def install_certificate(request, uuid):
         form = InstallCertificateForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            x509 = create_x509_and_update_cert(
-                        user=user,
-                        uuid=uuid,
-                        pub_key=form.cleaned_data.get('pub_key'))
-            if not x509:
-                return HttpResponse(content='Invalid or already installed Client Certificate', status=404)
+            try:
+                cert = Cert.objects.get(user=user, uuid=uuid, is_installed=False)
+            except Cert.DoesNotExist:
+                return HttpResponse(
+                    content='Certificate could not be found for this user or was already installed!',
+                    status=400)
+
+            x509 = cert.generate_and_sign_client_cert(
+                pub_key=form.cleaned_data.get('pub_key'))
+
             ret = HttpResponse(mimetype="application/x-x509-user-cert")
             ret.write(crypto.dump_certificate(crypto.FILETYPE_ASN1, x509))
             return ret
     else:
         form = InstallCertificateForm(request=request)
-
-    request.session.set_test_cookie()
 
     return render(request, 'client_certs/install_certificate.html', {'form': form})

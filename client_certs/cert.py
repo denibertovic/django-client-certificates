@@ -6,6 +6,8 @@ from django.conf import settings
 
 from OpenSSL import crypto
 
+from .helpers import asn1_general_time_format
+
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +18,6 @@ def create_signed_client_cert(client_public_key, country, state, locality, organ
     Function for generating client certificates
     """
 
-    # load files
     try:
         with open(settings.CERT_CA_FILE) as ca_file:
             ca = crypto.load_certificate(crypto.FILETYPE_PEM, ca_file.read())
@@ -40,8 +41,8 @@ def create_signed_client_cert(client_public_key, country, state, locality, organ
 
     now = datetime.now()
 
-    cert.set_notBefore(now.strftime("%Y%m%d%H%M%SZ"))
-    cert.set_notAfter(valid_until.strftime("%Y%m%d%H%M%SZ"))
+    cert.set_notBefore(asn1_general_time_format(now))
+    cert.set_notAfter(asn1_general_time_format(valid_until))
 
     cert.set_issuer(ca.get_subject())
 
@@ -50,3 +51,26 @@ def create_signed_client_cert(client_public_key, country, state, locality, organ
     cert.sign(ca_key, 'sha1')
 
     return cert
+
+
+def revoke_certificates(certificates):
+    try:
+        with open(settings.CERT_CA_FILE) as ca_file:
+            ca = crypto.load_certificate(crypto.FILETYPE_PEM, ca_file.read())
+        with open(settings.CERT_CA_KEY_FILE) as ca_key_file:
+            ca_key = crypto.load_privatekey(crypto.FILETYPE_PEM, ca_key_file.read())
+    except IOError as e:
+        log.error(e)
+        raise
+
+    with open(settings.CERT_REVOKE_FILE, 'r') as f:
+        crl = crypto.load_crl(crypto.FILETYPE_PEM, f.read())
+        for cert in certificates:
+            x509 = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+            revoked = crypto.Revoked()
+            revoked.set_rev_date(asn1_general_time_format(datetime.now()))
+            revoked.set_serial(hex(x509.get_serial_number())[2:])
+            crl.add_revoked(revoked)
+        crl_text = crl.export(ca, ca_key)
+    with open(settings.CERT_REVOKE_FILE, 'w') as f:
+        f.write(crl_text)

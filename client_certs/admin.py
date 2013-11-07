@@ -1,12 +1,12 @@
 from django.contrib import admin
-from django.conf import settings
 
 from .models import Cert
+from .cert import revoke_certificates
 
 
 class CertAdmin(admin.ModelAdmin):
 
-    list_display = ('user', 'install_link', 'is_valid', 'valid_until', 'is_installed')
+    list_display = ('user', 'install_link', 'is_valid', 'valid_until')
     fields = ('user', 'country', 'state', 'locality', 'organization',
         'organizational_unit', 'common_name', 'description', 'valid_until')
 
@@ -15,9 +15,8 @@ class CertAdmin(admin.ModelAdmin):
     install_link.allow_tags = True
 
     def revoke_certificate(self, request, queryset):
-        revoked = ''.join(cert.x509 for cert in queryset if cert.is_valid and cert.is_installed)
-        with open(settings.CERT_REVOKE_FILE, 'a') as f:
-            f.write(revoked)
+        for_revokation = [cert.x509 for cert in queryset if cert.is_valid and cert.is_installed]
+        revoke_certificates(for_revokation)
 
         updated = queryset.update(is_valid=False)
         if updated == 1:
