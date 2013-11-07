@@ -4,14 +4,14 @@ SETTINGS=--settings=$(PROJECT_NAME).settings.test
 
 FLAKE8_OPTS=--exclude=.git,migrations --max-complexity=10
 
-MINIMAL_DOCKER_VERSION=0.5
+DOCKER_VERSION=0.6.5
 DATA_DIR="__data"
-POSTGRES_VERSION=9.2
+POSTGRES_VERSION=9.3
 PORT=5432
 
 .PHONY: all test coverage clean requirements update \
-	ensure_virtualenv reqs/dev reqs/test reqs/prod dev-setup components bower \
-	docker-check docker-version postgres redis
+	ensure_virtualenv reqs dev-setup \
+	docker-check docker-version postgres
 all: coverage
 
 test:
@@ -35,16 +35,10 @@ ensure_virtualenv:
 		exit 1; \
 	fi
 
-reqs/dev: ensure_virtualenv
-	pip install -r requirements/dev.txt
+reqs: ensure_virtualenv
+	pip install -r requirements.txt
 
-reqs/test: ensure_virtualenv
-	pip install -r requirements/test.txt
-
-reqs/prod: ensure_virtualenv
-	pip install -r requirements/prod.txt
-
-dev-setup: ensure_virtualenv reqs/dev
+dev-setup: ensure_virtualenv reqs
 	if [ ! -f $(PROJECT_NAME)/settings/local.py ]; then \
 		echo 'from .dev import *' > $(PROJECT_NAME)/settings/local.py; \
 	fi
@@ -65,14 +59,15 @@ update: ensure_virtualenv
 	$(MANAGE) migrate
 	$(MANAGE) collectstatic --noinput
 
+
 docker-check:
 	@command -v docker >/dev/null 2>&1 || \
 		{ echo >&2 "Docker needs to be installed and on your PATH.  Aborting."; exit 1; }
 
 docker-version: docker-check
-	@if [ -z 'docker version | grep $(MINIMAL_DOCKER_VERSION)' ]; \
+	@if ! docker version | grep "Server version" | grep $(DOCKER_VERSION) > /dev/null; \
 		then \
-			echo "ERROR: Wrong docker version. Minimal required version: $(MINIMAL_DOCKER_VERSION)"; \
+			echo "ERROR: Wrong docker version. Recommended version: $(DOCKER_VERSION)"; \
 			exit 1; \
 	fi
 
